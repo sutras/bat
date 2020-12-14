@@ -1,0 +1,319 @@
+## 意图
+不喜欢造轮子的程序员不是一个好的程序员。去学习和编写一个JavaScript框架有助于提升自己的编程能力，还能提升自己的架构能力。
+
+
+## 设计框架需要具备的知识
+框架与库、JavaScript框架分类、JavaScript框架的主要功能、种子模块、模块加载系统、
+语言模块、浏览器嗅探与特征侦测、样式的支持侦测、类工厂、JavaScript对类的支撑、
+选择器引擎、浏览器内置的寻找元素的方法、节点模块、数据缓存系统、样式模块、
+属性模块、事件系统、异步处理、数据交互模块、ajax的实现、动画引擎、api的设计、
+插件化、MVVM框架等。
+
+
+## JavaScript框架分类
+如果是从**内部架构**与**理念**划分，目前JavaScript框架可以划分为5类。
+
+- 第一种出现的是以**命名空间**为导向的类库或框架，如创建一个数组用new Array()，生成一个对象用new Object()，完全的java风格，因此我们就可以以某一对象为根，不断为它添加对象属性或二级对象属性来组织代码，金字塔般地垒叠起来。代表作如早期的YUI与EXT。
+
+- 第二种出现的是以**类工厂**为导向的框架，如著名的Prototype，还有mootools、Base2、Ten。它们基本上除了最基本的命名空间，其他模块都是一个由类工厂衍生出来的类对象。尤其是mootoos 1.3把所有类型都封装成Type类型。
+
+- 第三种就是以jQuery为代表的以选择器为导向的框架，整个框架或库主体是一个特殊类数组对象，方便集化操作——因为选择器通常是一下子选择到N个元素节点，于是便一并处理了。jquery包含了几样了不起的东西：“无new实例化”技术，$(expr)就是返回一个实例，不需要显式地new出来；get first set all访问规则；数据缓存系统；IIFE（Immediately-Invoked Function Expression）。
+
+- 第四种就是以**加载器**串联起来的框架，他们都有复数个JavaScript文件，每个JavaScript文件都以固定规则编写。其中最著名的莫过于AMD。**模块化**是JavaScript走向工业化的标志。《Unix编程艺术》列举的众多“金科玉律”的第一条就模，里面有言——**“要编写复杂软件又不至于一败涂地的唯一方法，就是用定义清晰的接口把若干简单模块组合起来，如此一来，多数问题只会出现在局部，那么还有希望对局部进行改进或优化，而不至于牵动全身”**。许多企业内部框架都基本采取这种架构，如Dojo、YUI、Kissy、qwrap和mass等。
+
+- 第五种就是具有明确**分层架构**的MV*框架。首先是JavaScript MVC（现在叫CanJS）、backbonejs和spinejs，然后更符合前端实际的MVVM框架，如knockout、ember、angular、avalon、winjs。在MVVM框架中，原有DOM操作被声明式绑定取代了， 由框架自行处理，一用户只需专注于业务代码。
+
+
+## JavaScript框架的主要功能
+- 对基本数据类型的操作
+- 类型的判断
+- 选择器、DOMReady、AJAX
+- DOM操作（节点遍历、样式操作、属性操作）
+- 浏览器嗅探、特征侦测
+- 事件系统（支持事件代理）
+- 数据缓存与处理
+- 动画引擎
+- 插件的易开发和扩展性
+- 异步处理（Deferred）
+- 类工厂、提供extend或mixin对对象进行扩展
+- noConflict无冲突处理
+- cookie操作
+
+## javascript框架的特点
+- 兼容性
+- 易用性
+- 扩展性
+
+
+## 各个模块
+### 种子模块
+- 概念
+  种子模块也叫核心模块，是框架最先执行的部分，负责辅建全局用的基础设施。
+
+- 特点
+  极具扩展性，常用，稳定。
+  - 扩展性
+    扩展性是指通过它们能将其他模块的方法包进来。
+  - 常用
+    绝大多数模块都用到它们，防止做重复工作。
+  - 稳定性
+    稳定是指不能轻易在以后版本就给去掉。
+
+- 种子模块的功能
+  对象扩展，数组化，类型判定，简单的事件绑定与卸载，无冲突处理，模块加载与DOMready。
+
+### 模块加载系统
+任何语言一到大规模应用阶段，必然要经理拆分模块的过程，以有利于维护与团队协作。
+JavaScript模块化规范有三：
+- CommonJS规范
+  是用在服务器端的模块规范，node.js的模块系统就是参照CommonJS规范实现的。
+
+- AMD规范
+  异步模块定义，它是一个在浏览器端模块化开发的规范，实现者有require.js
+
+- CMD规范
+  实现者有sea.js（玉伯说过能够亲眼看到seajs死掉也是一种幸福）
+
+- ES6的module规范
+  在语言标准的层面上实现了模块功能，完全可以取代 CommonJS 和 AMD规范，成为浏览器和服务器通用的模块解决方案。
+
+  既然如此，放心用ES6的module规范就行了，在浏览器普遍未支持ES6的情况下，可以使用webpack工具把ES6转化为浏览器能识别的JavaScript代码。
+
+### 语言模块
+- 字符串扩展与修复
+- 数组扩展与修复
+- 数值扩展与修复
+- 日期扩展与修复
+
+### 特征侦测和浏览器嗅探
+浏览器嗅探用于探测浏览器的类型和版本等信息（通过navigator.userAgent），
+而特征侦测用于判断浏览器是否支持某些特性，比如对事件的支持、样式的支持等。
+
+### 类工厂
+即是通过定义一些语法糖来让JavaScript模拟传统的类。
+在ES6之前，JavaScript没有类的概念，可以通过构造函数来创建实例对象，通过原型来实现继承。
+ES6中引入的类基本上可以看做是一个语法糖，它的绝大部分功能，ES5都可以实现。
+新的类的写法只是让对象原型的写法更加清晰、更像面向对象编程的语法而已。
+
+### 选择器引擎
+既然IE8都支持querySelectorAll和querySelector，一切都变得简单。
+jQuery的Sizzle1.9长达1700行。
+zepto.js把querySelectorAll当成自己选择器引擎。
+
+### 节点模块
+集化操作
+- 节点创建的方式：
+    - document.createElement
+    - innerHTML
+    - insertAdjacentHTML
+    - createContextualFragment
+
+- 文档插入的API
+    - append : appendTo
+    - prepend : prependTo
+    - before : insertBefore
+    - after : insertAfter
+    - replaceWidth : replaceAll
+    - wrap
+    - wrapAll
+    - wrapInner
+
+插入节点方法：
+    - appendChild
+    - insertBefore
+
+append|prepend|before|after方法能插入的东西有：string|Node|NodeList|$对象，
+与push方法类似，可以传入多个值。
+除了以上方式，还可以传入一个函数，函数接受$里的元素和下标，返回值作为被插入的东西。
+
+实现：
+    - 字符串：通过insertAdjacentHTML插入
+    - 节点：通过插入节点方法插入
+    - 节点列表|$对象：转换为文档碎片
+    - 回调函数：返回值按照以上三种类型进行处理
+
+反转的实现：
+    反转方式能作为插入的东西有：
+    - 创建的元素
+    - 原有的节点
+
+    反转方法接受的参数为：新建的节点|原有的节点|节点列表|$对象
+
+### 缓存系统
+
+### 样式模块
+
+### 属性模块
+DOM属性系统，属性名会进行小写化处理，属性值会统一转为字符串。
+对于元素节点来说，其属性大体分成两大类：
+    1. 属性
+        就跟一般的JavaScript对象的属性一样，通过点运算符来获取/设置属性值，且不会显示在DOM树上。比如：nodeName、nodeType、innerHTML、offsetWidth、parentNode、children等。
+    2. 特性
+        值只能为字符串、名称不区分大小写、其键值是会显示在DOM树上的，通过以下API来操作：setAttribute、getAttribute、removeAttribute、hasAttribute等。
+当然，有一些特殊的“特性”也是可以以“属性”的方式来操作的，俗称脚踏两只船，例如：id、class、title、src、href、value等。
+注意：特性class变成属性后叫做“className”。
+
+### 事件系统
+事件系统是一个框架非常重要的部分，用于响应用户的操作。
+
+浏览器提供三种层次的API用于操作事件：
+1. 行内事件
+  把事件写在元素标签内。
+
+2. DOM0事件
+  以el.onXXX = function绑定的方式
+
+3. DOM2事件
+  也即多投事件，同一个元素同一类型事件可以绑定多个函数。
+
+兼容性：
+- 火狐不支持focusin、focusout事件（此两事件支持冒泡），也不支持DOMFocusIn、DOMFocusOut。
+- 火狐滚轮事件为DOMMouseScroll，其他浏览器为mousewheel
+- 谷歌不支持mouseenter、mouseleave
+
+Event对象的方法：
+- stopPropagation()
+    阻止事件传播（捕获和冒泡）
+- stopImmediatePropagation()
+    阻止事件传播并且阻止相同事件的其他侦听器被调用。
+- preventDefault()
+    阻止浏览器默认行为。
+
+Event对象的属性：
+- bubbles
+    只读，boolean，判断对象是否冒泡
+- cancelable
+    只读，boolean，判断是否可以取消事件默认行为，有时候调用 preventDefault()会报错，
+    因此，调用preventDefault()之前可以通过cancelable来进行判断。
+- defaultPrevented
+    只读，boolean，判断是否调用了preventDefault()
+- detail
+    只读，integer，与事件相关的细节信息
+- eventPhase
+    只读，integer，调用事件处理程序的阶段：1捕获，2处于目标，3冒泡
+- target
+    事件的目标
+- currentTarget
+    事件处理程序中的this对象
+- trusted
+    判断是否是浏览器生成的事件对象（异或是开发人员通过JavaScript创建的）。
+- type
+    被触发的事件的类型。
+- view
+    抽象视图，等同于发生事件的window对象。
+
+#### 事件类型
+
+##### UI事件
+- load：作用于对象：window、img、object、script
+- unload：作用于对象：window、object
+- abort：作用于对象：object
+- error：作用于对象：window、img、object
+- select：
+- resize：作用于对象：window、框架
+- scroll：作用于对象：所有有滚动条的元素，低版本谷歌需要通过document.body.scrollTop来获取页面的滚动距离
+
+##### 焦点事件
+- blur：不会冒泡
+- focus：不会冒泡
+- focusin：冒泡，火狐(52+)（使用focus，在捕获阶段实现事件代理）
+- focusout：冒泡，火狐(52+)（使用blur，在捕获阶段实现事件代理）
+
+##### 鼠标与滚轮事件
+- click
+- dblclick
+- mousedown
+- mouseup
+- mousemove
+- mouseenter：不冒泡，谷歌30以上才支持（使用包装器，符合条件才执行回调）
+- mouseleave：不冒泡，谷歌30以上才支持（使用包装器，符合条件才执行回调）
+- mouseover
+- mouseout
+- mousewheel：火狐不支持，火狐使用：DOMMouseScroll
+
+##### 键盘与文本事件
+- keydown
+- keypress
+- keyup
+- textInput
+
+###### HTML5事件
+- contextmenu
+- beforeunload
+- DOMContentedLoaded
+- readystatechange
+- pageshow/pagehide
+- hashchange
+
+##### 设备事件
+- orientationchange
+- deviceorientation
+- devicemotion
+
+##### 触摸与手势事件
+- touchstart
+- touchmove
+- touchend
+- touchcancel
+
+#### 模拟事件
+1. 创建事件对象，在document对象上调用createEvent( eventType )方法创建event对象，eventType可能的值：
+    - DOM2：UIEvents，DOM3：UIEvent
+    - DOM2：MouseEvents，DOM3：MouseEvent
+    - DOM2：MutationEvents，DOM3：MutationEvent
+    - DOM2：HTMLEvents，DOM3：HTMLEvent
+2. 初始化事件对象，初始化此event对象
+3. 触发事件，在DOM节点上调用dispatchEvent()方法触发事件
+
+
+## Deferred
+
+### 概念
+Deferred是一个双链参数加工的流水线模型。
+
+双链：
+双链是指它内部把回调分成两种，一种叫成功回调，一种叫错误回调。
+添加回调是一组一组添加的。
+
+双链参数：
+每组回调的参数都是上一组回调的处理结果。
+
+流水线：
+每个回调可能不是紧挨着执行。
+
+### 作用
+- 解决回调地狱
+- 捕获异常
+
+
+
+## 开始设计框架
+### 兼容性
+不兼容IE8及以下等非标准浏览器，原因有三。第一是没有必要（新技术日新月异），第二降低学习成本，第三是避免在与低版本IE浏览器抗衡当中丧失学习热情和信心。
+
+### 框架名
+首先，需要在window里设置一个立足点，也就是命名空间，把命名空间等同于框架名，美曰其名：bat。
+当然啦，为了避免命名冲突（虽然bat很少人用），学着jQuery搞一个noConflict。
+
+### 类型判断
+除了一些常用的isEmptyObject、isPlainObject、isFunction、isArrayLike、isArray，其他可以通过type函数来获取或者判断数据类型。通过class2type保存类名与类型的映射，里面不包含的则统一将其看做object类型。
+
+### domReady
+因为不用兼容非主流浏览器，因此直接通过DOMContentLoaded事件就可以实现DOMReady功能。
+
+### 模块加载系统
+在考虑要不要学，一扎进入可能出不来，出来可能也是晕头转向。ES6规范出来已久了，有webpack基本能解决模块问题。思前想后还是要学一下，技术很多都是相通的，学过模块加载原理，使用其他模块加载标准会不会简单一点。（一天后：差点自暴自弃，还是不高模块加载系统了）
+
+### 类工厂
+通过寄生组合式继承的方式来定义了一个函数，用于创建一个类以及实现继承功能。
+
+### 选择器引擎
+使用浏览器提供的querySelectorAll来简简单单实现对选择器的操作
+
+### 节点模块
+
+### 缓存系统
+
+### 样式模块
+
+### 属性模块
